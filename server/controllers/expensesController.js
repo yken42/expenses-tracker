@@ -4,9 +4,11 @@ import Expense from "../models/expenseModel.js";
 export const createExpense = async (req, res) => {
   const { name, amount, category, type } = req.body;
 
-  console.log(req.user)
-  if(!req.user || !req.user.id)
-    return res.status(401).json({ message: "Unauthorized, no user id provided"})
+  console.log(req.user);
+  if (!req.user || !req.user.id)
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no user id provided" });
   try {
     if (!name || !amount || !category || !type) {
       res.status(401).json({ message: "all fields are required" });
@@ -16,7 +18,7 @@ export const createExpense = async (req, res) => {
       amount,
       category,
       type,
-      user: req.user.id
+      user: req.user.id,
     });
     await newExpense.save();
     return res.status(201).json({ message: "expense created" });
@@ -78,20 +80,14 @@ export const updateExpense = async (req, res) => {
   try {
     const expense = await Expense.findById(id);
     if (!expense) return res.status(404).json({ message: "Expense not found" });
-
     if (expense.user.toString() !== userId)
       return res
         .status(403)
         .json({ message: "Unauthorized to update this expense" });
-    // if (name) expense.name = name;
-    // if (amount) expense.amount = amount;
-    // if (category) expense.category = category;
-    // if (type) expense.type = type;
-    Object.keys(updates).forEach(key => {
-        if (updates[key]) {
-          expense[key] = updates[key];
-        }
-      });
+    if (name) expense.name = name;
+    if (amount) expense.amount = amount;
+    if (category) expense.category = category;
+    if (type) expense.type = type;
     await expense.save();
 
     return res
