@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
+// **************** SIGN UP ****************
 export const signup = async (req, res) => {
   const { name, password, email } = req.body;
   try {
@@ -22,6 +23,7 @@ export const signup = async (req, res) => {
   }
 };
 
+// **************** LOGIN ****************
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -45,6 +47,7 @@ export const login = async (req, res) => {
   }
 }
 
+// **************** RPOTECTED ROUTE ****************
 export const protectedRoute = async (req, res) => {
   return res.status(201).json({ message: "access granted!"});
 }

@@ -1,8 +1,8 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navbar } from './components/Navbar';
-import { Dashboard } from './components/Dashboard';
-import { Reports } from './components/Reports';
+import { Overview } from './components/overview/Overview';
+import { Expenses } from './components/Expenses';
 import { Settings } from './components/Settings';
 
 function App() {
@@ -13,8 +13,8 @@ function App() {
         <div className='flex'>
         <Navbar />
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/reports" element={<Reports />} />
+          <Route path="/overview" element={<Overview />} />
+          <Route path="/expenses" element={<Expenses />} />
           <Route path='/settings' element={<Settings />} />
         </Routes>
         </div>
