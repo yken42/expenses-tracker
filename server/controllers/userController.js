@@ -51,3 +51,7 @@ export const login = async (req, res) => {
 export const protectedRoute = async (req, res) => {
   return res.status(201).json({ message: "access granted!"});
 }
+
+export const logout = async (req, res) => {
+  
+}

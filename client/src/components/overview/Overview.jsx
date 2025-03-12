@@ -4,7 +4,10 @@ import { AmountBox } from './AmountBox';
 import { Category } from './Category';
 import { History } from './History';
 
+
 export const Overview = () => {
+
+
   return (
     <div className="bg-[#F7F7F8] w-full">
       <div className="m-4">

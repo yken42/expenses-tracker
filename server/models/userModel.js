@@ -1,8 +1,8 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model, mongo } from "mongoose";
 
 const userSchema = new Schema(
   {
-    password: {
+    name: {
       type: String,
       required: true,
     },
@@ -10,10 +10,25 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    name: {
+    password: {
       type: String,
       required: true,
     },
+    refreshToken: String,
+    isVerified: {
+      type: String,
+      default: false,
+    },
+    monthlyBudget: {
+      type: Number,
+      default: 0,
+    },
+    expenses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Expense",
+      },
+    ],
   },
   {
     timestamps: true,
