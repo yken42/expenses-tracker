@@ -1,16 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TiHomeOutline } from "react-icons/ti";
 import { FaRegClipboard } from "react-icons/fa";
 import { FiSettings } from "react-icons/fi";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PiSignOutFill } from "react-icons/pi";
 import clsx from 'clsx';
+import axios from 'axios';
+import useStore from '../store.js';
 
 export const Navbar = () => {
+  const navigate = useNavigate();
+  const logout = useStore((state) => state.logout);
   const [activeTab, setActiveTab] = useState("/");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      navigate('/');
+    }
   };
 
   return (
@@ -72,7 +83,8 @@ export const Navbar = () => {
         </li>
       </ul>
       <hr className="w-full text-white border-2 border-dotted " />
-      <div className="flex text-white items-center justifiy-center mx-auto w-fit absolute absolute bottom-12 left-10 text-xl hover:cursor-pointer p-4">
+      <div className="flex text-white items-center justify-center mx-auto w-fit absolute bottom-12 left-10 text-xl hover:cursor-pointer p-4"
+      onClick={handleLogout}>
         <PiSignOutFill className="mr-2" />
         Sign out
       </div>

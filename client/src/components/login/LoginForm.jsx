@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export const LoginForm = () => {
-
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
@@ -13,7 +11,6 @@ export const LoginForm = () => {
     const handleLogin = async(e) => {
         e.preventDefault();
         setError(null);
-
         try {
             const res = await axios.post(
               "http://localhost:3000/api/users/login",
@@ -21,7 +18,6 @@ export const LoginForm = () => {
               { withCredentials: true }
             );
             console.log("Login Successful");
-            localStorage.setItem("token", res.data.token);
             navigate('/overview');
         } catch (error) {
             setError(error.response?.data?.message || "Login failed");
