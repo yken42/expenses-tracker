@@ -1,12 +1,51 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Cookies  from 'js-cookie';
 
 export const LoginForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const res = await axios.get("http://localhost:3000/api/users/protected", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if(res.ok) {
+                    navigate('/overview', { replace: true });
+                } else {
+                    setLoading(false);
+                }
+                // If request succeeds, user is authenticated
+                navigate('/overview', { replace: true }); // Added replace: true to prevent back navigation
+            } catch (error) {
+                // Only show login form if not authenticated
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
+    }, [navigate]);
+
+    useEffect(() => {
+      const isAuth = Cookies.get("isAuth");
+      if(isAuth) {
+        navigate('/overview', { replace: true });
+      }
+    }, []);
+    
+
+    // Show loading state while checking auth
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     const handleLogin = async(e) => {
         e.preventDefault();
@@ -17,8 +56,12 @@ export const LoginForm = () => {
               { email, password },
               { withCredentials: true }
             );
-            console.log("Login Successful");
-            navigate('/overview');
+            if(res.status === 200) {
+              Cookies.set("isAuth", true);    
+              navigate('/overview');
+            } else {
+              setError(res.data?.message || "Login failed");
+            }
         } catch (error) {
             setError(error.response?.data?.message || "Login failed");
         }

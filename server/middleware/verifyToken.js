@@ -1,18 +1,18 @@
 import jwt from 'jsonwebtoken';
-
+import User from '../models/userModel.js';
 export const verifyToken = async (req, res, next) => {
-    const token = req.header('Authorization')?.split(" ")[1];
+  const token = req.cookies.accessToken; 
 
-    console.log("token: ", token)
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized, no token" });
+  }
 
-    if(!token)
-        return res.status(403).json({ messag: "Access denied, No token provided" });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        return res.status(401).json({ message: "Invalid or expired token" });
-    }
-}
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const user = await User.findById(decoded.id || decoded._id).select("-password -refreshToken");
+    req.user = user; 
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: "Forbidden, invalid token" });
+  }
+};

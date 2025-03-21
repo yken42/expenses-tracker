@@ -13,7 +13,7 @@ function App() {
         <div className='flex'>
           <Navbar />
           <Routes>
-            <Route path='/' element={<LoginForm />} />
+            <Route path='/login' element={<LoginForm />} />
             <Route path="/overview" element={<Overview />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path='/settings' element={<Settings />} />

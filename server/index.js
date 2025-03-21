@@ -4,6 +4,7 @@ import expenseRouter from './routes/expenseRouter.js'
 import userRouter from './routes/userRouter.js';
 import cors from 'cors';
 import 'dotenv/config';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const PORT = process.env.PORT
@@ -14,6 +15,7 @@ app.use(cors({
     credentials: true
 }))
 app.use(express.json());
+app.use(cookieParser());
 app.use("/api/expenses", expenseRouter);
 app.use("/api/users", userRouter);
 

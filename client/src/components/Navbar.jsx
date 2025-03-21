@@ -7,11 +7,11 @@ import { PiSignOutFill } from "react-icons/pi";
 import clsx from 'clsx';
 import axios from 'axios';
 import useStore from '../store.js';
-
+import Cookies from 'js-cookie';
 export const Navbar = () => {
   const navigate = useNavigate();
   const logout = useStore((state) => state.logout);
-  const [activeTab, setActiveTab] = useState("/");
+  const [activeTab, setActiveTab] = useState("/overview");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -20,7 +20,8 @@ export const Navbar = () => {
   const handleLogout = async () => {
     const result = await logout();
     if (result.success) {
-      navigate('/');
+      Cookies.remove("isAuth");
+      navigate('/login');
     }
   };
 

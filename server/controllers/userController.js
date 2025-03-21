@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt.utils.js";
 
 
 // **************** SIGN UP ****************
@@ -37,32 +38,65 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Email or password incorrect" });
     }
 
-    const token = jwt.sign(
-      { id: user.id, name: user.name },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-    res.cookie("token", token, {
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true
     });
-    return res.status(200).json({ message: "User login successfully", user: user.email, token });
+    return res.status(200).json({ message: "User login successfully", user: user.email, accessToken });
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }
 
-// **************** RPOTECTED ROUTE ****************
-export const protectedRoute = async (req, res) => {
-  return res.status(201).json({ message: "access granted!"});
-}
-
 export const logout = async (req, res) => {
-  res.clearCookie("token", {
+
+  await User.findByIdAndUpdate(req.user?._id, { refreshToken: null });
+  res.clearCookie("accessToken", {
     httpOnly: true,
     secure: true,
-    sameSite: "none",
-    expires: new Date(0)
+    sameSite: "Strict"
   });
   return res.status(200).json({ message: "Logged out successfully" });
+}
+
+export const protectedRoute = async (req, res) => {
+  try {
+    if(!req.user){
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    return res.status(200).json({ message: "access granted!", user: {
+      id: req.user._id,
+      name: req.user.name
+    }});
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
+export const refresh = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if(!refreshToken) return res.status(401).json({ message: "No refresh token" });
+  try {
+    const user = await User.findOne({ refreshToken });
+    if(!user) return res.status(403).json({ message: "Invalid refresh token" });
+
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const accessToken = generateAccessToken(user);
+    res.json({ accessToken});
+  } catch (error) {
+    
+  }
+}
+
+export const getCurrentUser = async (req, res) => {
+  const { user } = req;
+  if(!user) return res.status(401).json({ message: "Unauthorized" });
+  return res.status(200).json({ user });
 }
