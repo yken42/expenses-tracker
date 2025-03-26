@@ -5,7 +5,6 @@ import { FiSettings } from "react-icons/fi";
 import { Link, useNavigate } from 'react-router-dom';
 import { PiSignOutFill } from "react-icons/pi";
 import clsx from 'clsx';
-import axios from 'axios';
 import useStore from '../store.js';
 import Cookies from 'js-cookie';
 export const Navbar = () => {

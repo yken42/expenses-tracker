@@ -1,16 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaMinusCircle } from "react-icons/fa";
-
-
+import ExpenseModal from '../modal/ExpenseModal';
 export const WelcomeCard = () => {
+
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="m-4">
       <div className='flex justify-between'>
         <h1 className="text-black font-medium text-4xl flex items-center justify-center ">
           Overview
         </h1>
-        <div className='add-expense flex text-white w-1/3 text-lg'>
+        <div className='add-expense flex text-white w-1/3 text-lg' on>
             <div className='new-income bg-[#089767] border-1 border-[#00ffaa] rounded-lg flex justify-center items-center mx-2 w-1/2 hover:cursor-pointer p-2 text-center'>
                 <h3 className='mx-2'>New Income</h3>
                 <FaCirclePlus className='text-4xl'/>
@@ -21,6 +23,8 @@ export const WelcomeCard = () => {
             </div>
         </div>
       </div>
+      {open && <ExpenseModal open={open} setOpen={setOpen}/>}
+
     </div>
   );
 }
