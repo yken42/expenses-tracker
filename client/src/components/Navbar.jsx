@@ -7,11 +7,12 @@ import { PiSignOutFill } from "react-icons/pi";
 import clsx from 'clsx';
 import useStore from '../store.js';
 import Cookies from 'js-cookie';
+import useUserStore from '../store/useUserStore';
+
 export const Navbar = () => {
   const navigate = useNavigate();
   const logout = useStore((state) => state.logout);
   const [activeTab, setActiveTab] = useState("/overview");
-
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };

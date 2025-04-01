@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Progressbar } from './Progressbar';
 
 
 export const Category = ({ type, source, amount, total }) => {
+
+  
+
   return (
     <div className="p-2 w-full bg-[#F7F7F8] shadow-md rounded-lg border-1 border-gray-300">
       <h2 className="text-xl font-roboto font-medium">{type} by category</h2>

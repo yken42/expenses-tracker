@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies  from 'js-cookie';
+import useUserStore from '../../store/useUserStore';
 
 export const LoginForm = () => {
     const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ export const LoginForm = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-
+    const setUser = useUserStore((state) => state.setUser);
     useEffect(() => {
         const checkAuth = async () => {
             try {
@@ -57,7 +58,8 @@ export const LoginForm = () => {
               { withCredentials: true }
             );
             if(res.status === 200) {
-              Cookies.set("isAuth", true);    
+              Cookies.set("isAuth", true);   
+              setUser({name: res.data.name, id: res.data.id});
               navigate('/overview');
             } else {
               setError(res.data?.message || "Login failed");

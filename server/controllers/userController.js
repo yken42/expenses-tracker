@@ -43,12 +43,13 @@ export const login = async (req, res) => {
 
     user.refreshToken = refreshToken;
     await user.save();
+    // console.log(user.name);
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true
     });
-    return res.status(200).json({ message: "User login successfully", user: user.email, accessToken });
+    return res.status(200).json({ message: "User login successfully", email: user.email, name: user.name, id: user._id});
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong", error: error.message });
   }

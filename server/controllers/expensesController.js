@@ -1,10 +1,10 @@
 import Expense from "../models/expenseModel.js";
 
-// **************** CREATE EXPENSE ****************
+// **************** CREATE  ****************
 export const createExpense = async (req, res) => {
   const { name, amount, category, type } = req.body;
 
-  console.log(req.user);
+  // console.log("REQ.USER", req.user);
   if (!req.user || !req.user.id)
     return res
       .status(401)
@@ -21,7 +21,7 @@ export const createExpense = async (req, res) => {
       user: req.user.id,
     });
     await newExpense.save();
-    return res.status(201).json({ message: "expense created" });
+    return res.status(201).json({ newExpense });
   } catch (error) {
     return res
       .status(500)
@@ -31,23 +31,11 @@ export const createExpense = async (req, res) => {
 
 // **************** GET ALL EXPENSES ****************
 export const getAllExpenses = async (req, res) => {
-  console.log("freaky");
+  const userId = req.params.id;
   try {
-    const expenses = await Expense.find();
-    return res.status(201).json({ message: "success", expenses });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Something went wrong", error: error.message });
-  }
-};
-
-// **************** GET EXPENSE BY ID ****************
-export const getExpenseById = async (req, res) => {
-  const expenseId = req.params.id;
-  try {
-    const expense = await Expense.findById(expenseId);
-    return res.status(201).json({ expense });
+    const expenses = await Expense.find({ user: userId });
+    console.log(expenses)
+    return res.status(201).json({ message: "success", data: expenses });
   } catch (error) {
     return res
       .status(500)
@@ -60,7 +48,7 @@ export const deleteExpense = async (req, res) => {
   const expenseId = req.params.id;
   try {
     const deletedExpense = await Expense.findByIdAndDelete(expenseId);
-    console.log(expenseId);
+    // console.log(expenseId);
     if (!deletedExpense)
       return res.status(404).json({ message: "id not found" });
     return res.status(201).json({ message: "delete successfully" });
