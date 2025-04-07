@@ -2,10 +2,20 @@ import React, { useState } from 'react'
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaMinusCircle } from "react-icons/fa";
 import ExpenseModal from '../modal/ExpenseModal';
+import { useNavigate } from 'react-router-dom';
+import { PiSignOutFill } from "react-icons/pi";
+import useUserStore from '../../store/useUserStore';
+import Cookies from 'js-cookie';
 
 export const WelcomeCard = () => {
+  const navigate = useNavigate();
+  const logout = useUserStore((state) => state.logout);
   const [open, setOpen] = useState(false);
   const [isIncome, setIsIncome] = useState(false);
+  const [activeTab, setActiveTab] = useState("/overview");
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
 
   const handleOpenIncomeModal = () => {
     setIsIncome(true);
@@ -15,6 +25,14 @@ export const WelcomeCard = () => {
   const handleOpenExpenseModal = () => {
     setIsIncome(false);
     setOpen(true);
+  };
+
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      Cookies.remove("isAuth");
+      navigate('/login');
+    }
   };
 
   return (
@@ -38,6 +56,11 @@ export const WelcomeCard = () => {
                 <h3 className='mx-2'>New Expense</h3>
                 <FaMinusCircle className='text-4xl'/>   
             </div>
+            <div className="flex text-black items-center justify-center mx-auto w-fit text-xl hover:cursor-pointer p-4"
+      onClick={handleLogout}>
+        <PiSignOutFill className="mr-2" />
+        Sign out
+      </div>
         </div>
       </div>
       <ExpenseModal 

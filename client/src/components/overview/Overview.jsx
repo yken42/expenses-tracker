@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { WelcomeCard } from './WelcomeCard';
 import { AmountBox } from './AmountBox';
 import { Category } from './Category';
-import { History } from './History';
+import { TransactionTable } from '../expenses/Expenses';
 import useUserStore from '../../store/useUserStore';
 import useTransactionStore from '../../store/useTransactionStore';
 
@@ -39,8 +39,8 @@ export const Overview = () => {
         <Category type={"income"} />
         <Category type={"expense"} />
       </div>
-      <div className='history mt-2 mx-4'>
-        <History />
+      <div className='mx-4'>
+        <TransactionTable />
       </div>
     </div>
   );

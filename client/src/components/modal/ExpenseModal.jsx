@@ -13,6 +13,23 @@ import {
   Button,
 } from '@mui/material';
 
+// Define category options
+const CATEGORIES = {
+  expense: [
+    { value: "food", label: "Food" },
+    { value: "transportation", label: "Transportation" },
+    { value: "utilities", label: "Utilities" },
+    { value: "entertainment", label: "Entertainment" },
+    { value: "other", label: "Other" },
+  ],
+  income: [
+    { value: "salary", label: "Salary" },
+    { value: "investments", label: "Investments" },
+    { value: "freelancing", label: "Freelancing" },
+    { value: "other", label: "Other" },
+  ],
+};
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -25,7 +42,7 @@ const style = {
   p: 4,
 };
 
-export default function ExpenseModal({ open, setOpen, isIncome }) {
+export default function TransactionModal({ open, setOpen, isIncome }) {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [name, setName] = useState('');
@@ -34,66 +51,63 @@ export default function ExpenseModal({ open, setOpen, isIncome }) {
 
   const handleClose = () => {
     setOpen(false);
-    // Reset all form fields when closing
+    // Reset form fields
     setAmount('');
     setCategory('');
     setName('');
   };
 
   const handleSubmit = async () => {
-    // Validate inputs (including name)
     if (!amount || !category || !name) {
       alert('Please fill in all fields');
       return;
     }
 
     const transaction = {
-      name,
+      name: name,
       amount: parseFloat(isIncome ? amount : -amount),
       category,
       type: isIncome ? 'income' : 'expense',
     };
 
+    console.log('Submitting transaction:', transaction);
+
     try {
       await addTransaction(transaction);
-      // Handle form submission      
-      // Close modal and reset form
       handleClose();
     } catch (error) {
       console.error('Error:', error);
+      alert('Failed to add transaction');
     }
   };
+
+  // Get current categories based on transaction type
+  const currentCategories = isIncome ? CATEGORIES.income : CATEGORIES.expense;
 
   return (
     <Modal
       open={open}
       onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      BackdropProps={{
-        onClick: handleClose
-      }}
+      BackdropProps={{ onClick: handleClose }}
     >
       <Box 
         sx={style}
         onClick={(e) => e.stopPropagation()}
       >
         <Typography id="modal-modal-title" variant="h6" component="h2">
-          Add New Expense
+          Add New {isIncome ? 'Income' : 'Expense'}
         </Typography>
         
-        {/* Name Input Field */}
         <TextField
           fullWidth
-          label="Expense Name"
+          label={isIncome ? "Income Name" : "Expense Name"}
           type="text"
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., Grocery Shopping"
+          placeholder={isIncome ? "e.g., Monthly Salary" : "e.g., Grocery Shopping"}
         />
         
-        {/* Amount Input Field */}
         <TextField
           fullWidth
           label="Amount"
@@ -106,7 +120,6 @@ export default function ExpenseModal({ open, setOpen, isIncome }) {
           onChange={(e) => setAmount(e.target.value)}
         />
 
-        {/* Category Select Field */}
         <FormControl fullWidth margin="normal">
           <InputLabel>Category</InputLabel>
           <Select
@@ -114,15 +127,14 @@ export default function ExpenseModal({ open, setOpen, isIncome }) {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
-            <MenuItem value="food">Food</MenuItem>
-            <MenuItem value="transportation">Transportation</MenuItem>
-            <MenuItem value="utilities">Utilities</MenuItem>
-            <MenuItem value="entertainment">Entertainment</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
+            {currentCategories.map((cat) => (
+              <MenuItem key={cat.value} value={cat.value}>
+                {cat.label}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
-        {/* Update Submit Button */}
         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
           <Button 
             variant="outlined" 
@@ -134,6 +146,12 @@ export default function ExpenseModal({ open, setOpen, isIncome }) {
           <Button 
             variant="contained" 
             onClick={handleSubmit}
+            sx={{
+              bgcolor: isIncome ? '#089767' : '#8f0329',
+              '&:hover': {
+                bgcolor: isIncome ? '#067a52' : '#6b0220',
+              }
+            }}
           >
             Submit
           </Button>

@@ -5,6 +5,8 @@ const useTransactionStore = create((set, get) => ({
   
   addTransaction: async (transaction) => {
     try {
+      console.log('Sending transaction to backend:', transaction); // Debug log
+
       const response = await fetch(`http://localhost:3000/api/expenses/create`, {
         method: 'POST',
         headers: {
@@ -19,11 +21,13 @@ const useTransactionStore = create((set, get) => ({
       }
 
       const savedTransaction = await response.json();
-      
+      console.log('Received from backend:', savedTransaction); // Debug log
+
       set((state) => ({
-        transactions: Array.isArray(state.transactions) 
-          ? [...state.transactions, savedTransaction.newExpense]
-          : [savedTransaction.newExpense]
+        transactions: [...state.transactions, {
+          ...savedTransaction.newExpense,
+          name: transaction.name, // Explicitly include name
+        }]
       }));
 
       return true;
@@ -48,7 +52,6 @@ const useTransactionStore = create((set, get) => ({
       }
       
       const data = await response.json();
-      console.log("RESPONSE _>>>>>>>", data)
       
       set({ transactions: Array.isArray(data.data) ? data.data : [] });
       
@@ -89,6 +92,63 @@ const useTransactionStore = create((set, get) => ({
 
   // Optional: Add a clear function
   clearTransactions: () => set({ transactions: [] }),
+
+  // Fetch all transactions
+  fetchTransactions: async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/expenses', {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+
+      const data = await response.json();
+      set({ transactions: data });
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      set({ transactions: [] });
+    }
+  },
+
+  // Add updateTransaction function
+  updateTransaction: async (updatedTransaction) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/expenses/${updatedTransaction._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...updatedTransaction,
+          // Ensure amount sign matches type
+          amount: updatedTransaction.type === 'expense' 
+            ? -Math.abs(updatedTransaction.amount)
+            : Math.abs(updatedTransaction.amount)
+        }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update transaction');
+      }
+
+      const updated = await response.json();
+
+      // Update the transaction in the local state
+      set((state) => ({
+        transactions: state.transactions.map((t) => 
+          t._id === updatedTransaction._id ? updated : t
+        ),
+      }));
+
+      return true;
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      return false;
+    }
+  },
 }));
 
 export default useTransactionStore;

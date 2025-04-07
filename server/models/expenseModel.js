@@ -2,13 +2,18 @@ import { Schema, model } from "mongoose";
 
 const expenseSchema = new Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
     amount: {
       type: Number,
       required: true,
     },
     category: {
       type: String,
-      enum: ["food", "transportation", "utilities", "entertainment", "other"],
+      enum: ["food", "transportation", "utilities", "entertainment", "other",
+             "salary", "investments", "freelancing"],
       required: true,
     },
     user: {

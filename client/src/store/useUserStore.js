@@ -9,6 +9,8 @@ const useUserStore = create(
       logout: () => {
         localStorage.removeItem('token');
         set({ user: { name: "Guest" } });
+        document.cookie = "isAuth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        return { success: true };
       },
     }),
     {

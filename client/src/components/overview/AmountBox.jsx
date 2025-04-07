@@ -61,12 +61,63 @@ export const AmountBox = ({ type }) => {
     }
   };
 
+  const getComparisonText = () => {
+    const amount = getAmount();
+    const total = getAmount();
+    const comparison = total - amount;
+    if (comparison > 0) {
+      return `+${formatAmount(comparison)}`;
+    } else if (comparison < 0) {
+      return formatAmount(comparison);
+    } else {
+      return 'No change';
+    }
+  };
+
   return (
-    <div className={`rounded-lg p-4 ${getBoxStyle()}`}>
-      <h2 className="text-xl font-semibold mb-2">{getTitle()}</h2>
-      <p className="text-2xl font-bold">
-        {formatAmount(getAmount())}
-      </p>
+    <div className={`
+      rounded-xl p-6 transition-all duration-200
+      ${type === 'income' 
+        ? 'bg-green-50 border-green-100' 
+        : type === 'outcome' 
+          ? 'bg-red-50 border-red-100'
+          : 'bg-white border-gray-100'
+      }
+      border hover:shadow-md
+    `}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-gray-600 font-medium">
+          {type === 'income' 
+            ? 'Total Income' 
+            : type === 'outcome' 
+              ? 'Total Expenses' 
+              : 'Net Balance'
+          }
+        </h3>
+        <span className={`
+          text-2xl
+          ${type === 'income' 
+            ? 'text-green-600' 
+            : type === 'outcome' 
+              ? 'text-red-600' 
+              : 'text-gray-900'
+          }
+        `}>
+          {formatAmount(getAmount())}
+        </span>
+      </div>
+      <div className="flex items-center text-sm">
+        <span className={`
+          ${type === 'income' 
+            ? 'text-green-600' 
+            : type === 'outcome' 
+              ? 'text-red-600' 
+              : 'text-gray-600'
+          }
+        `}>
+          {getComparisonText()}
+        </span>
+      </div>
     </div>
   );
 }
